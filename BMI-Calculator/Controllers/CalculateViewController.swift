@@ -1,4 +1,4 @@
-//
+ //
 //  ViewController.swift
 //  BMI-Calculator-LayoutPractice
 //
@@ -7,12 +7,14 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class CalculateViewController: UIViewController {
     
     @IBOutlet weak var heightLabelOutlet: UILabel!
     @IBOutlet weak var weightLabelOutlet: UILabel!
     @IBOutlet weak var heightSliderOutlet: UISlider!
     @IBOutlet weak var weightSliderOutlet: UISlider!
+    
+    var calculatorBrain = CalculatorBrain()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,20 +36,20 @@ class ViewController: UIViewController {
     @IBAction func calculateButtonPressed(_ sender: UIButton) {
         let height = heightSliderOutlet.value
         let weight = weightSliderOutlet.value
-        let bmi: Float
         
-        if height != 0 && weight != 0 {
-            bmi = weight / pow(height, 2)
-        } else {
-            bmi = 0
+        calculatorBrain.calculateBMI(height: height, weight: weight)
+        
+        self.performSegue(withIdentifier: "goToResult", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "goToResult" {
+            let destinationVC = segue.destination as! ResultViewController
+            
+            destinationVC.bmiValue = calculatorBrain.getBMIValue()
+            destinationVC.bmiAdvice = calculatorBrain.getAdvice()
+            destinationVC.bmiColor = calculatorBrain.getColor()
         }
-        
-        print(bmi)
-        
-        let secondVC = SecondViewController()
-        secondVC.bmiValue = String(format:"%.1f", bmi)
-        
-        self.present(secondVC, animated: true, completion: nil)
     }
 }
 
